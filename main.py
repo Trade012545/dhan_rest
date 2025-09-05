@@ -67,16 +67,10 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "securityId": str(security_id),
         "exchangeSegment": exchange_segment,
         "instrument": instrument_type,
-        "interval": interval,
         "fromDate": from_date_str,
-        "toDate": to_date_str
-    }
-    if instrument_type in ['OPTIDX', 'OPTSTK', 'FUTIDX', 'FUTSTK']:
-        payload['symbol'] = instrument['symbol']
-        payload['strikePrice'] = str(int(instrument['strikePrice']))
-        payload['optionType'] = instrument['optionType']
-        payload['expiryDate'] = instrument['expiryDate']
-    
+        "toDate": to_date_str,
+        "interval": interval
+    } 
     print(f"DhanHQ API Request Payload: {payload}")
 
     try:
@@ -119,8 +113,3 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
 @app.get("/")
 def read_root():
     return {"message": "DhanHQ Historical Data API Proxy is running."}
-
-# To run this application locally:
-# 1. Make sure your virtual environment is activated: venv\Scripts\activate
-# 2. Set your access token: set DHAN_ACCESS_TOKEN=your_real_token
-# 3. Run the server: uvicorn main:app --reload
