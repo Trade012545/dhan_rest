@@ -73,7 +73,7 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
     }
     if instrument_type in ['OPTIDX', 'OPTSTK', 'FUTIDX', 'FUTSTK']:
         payload['symbol'] = instrument['symbol']
-        payload['strikePrice'] = int(instrument['strikePrice'])
+        payload['strikePrice'] = str(int(instrument['strikePrice']))
         payload['optionType'] = instrument['optionType']
         payload['expiryDate'] = instrument['expiryDate']
     
