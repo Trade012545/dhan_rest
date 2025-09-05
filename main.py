@@ -63,6 +63,7 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
+    
     payload = {
         "securityId": str(security_id),
         "exchangeSegment": exchange_segment,
@@ -71,6 +72,13 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "fromDate": from_date_str,
         "toDate": to_date_str
     }
+
+    if instrument_type in ['OPTIDX', 'OPTSTK', 'FUTIDX', 'FUTSTK']:
+        payload['symbol'] = instrument['symbol']
+        payload['strikePrice'] = instrument['strikePrice']
+        payload['optionType'] = instrument['optionType']
+        payload['expiryDate'] = instrument['expiryDate']
+
     print(f"DhanHQ API Request Payload: {payload}")
 
     try:
