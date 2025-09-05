@@ -5,6 +5,7 @@ import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
+import traceback
 
 # Load the CSV file into a pandas DataFrame
 try:
@@ -63,23 +64,31 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
+    
     payload = {
         "securityId": str(security_id),
         "exchangeSegment": exchange_segment,
         "instrument": instrument_type,
+        "interval": interval,
         "fromDate": from_date_str,
-        "toDate": to_date_str,
-        "interval": interval
-    } 
-    print(f"DhanHQ API Request Payload: {payload}")
+        "toDate": to_date_str
+    }
 
     try:
         response = requests.post(DHAN_API_URL, headers=headers, json=payload)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
+        print(f"Error calling DhanHQ API: {e}")
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error calling DhanHQ API: {e}")
 
-    dhan_data = response.json()
+    try:
+        dhan_data = response.json()
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON response from DhanHQ API: {e}")
+        print(f"Response content: {response.text}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Error decoding JSON response from DhanHQ API: {e}")
 
     # 4. Transform the data to Binance kline format
     try:
@@ -107,9 +116,16 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         ]
         return binance_format_data
     except (KeyError, TypeError) as e:
-        # This will catch errors if the DhanHQ response is not in the expected format
+        print(f"Error transforming DhanHQ data: {e}")
+        print(f"DhanHQ Data: {dhan_data}")
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Failed to parse DhanHQ response: {e}")
 
 @app.get("/")
 def read_root():
     return {"message": "DhanHQ Historical Data API Proxy is running."}
+
+# To run this application locally:
+# 1. Make sure your virtual environment is activated: venv\Scripts\activate
+# 2. Set your access token: set DHAN_ACCESS_TOKEN=your_real_token
+# 3. Run the server: uvicorn main:app --reload
