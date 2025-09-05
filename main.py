@@ -36,13 +36,10 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
     Mimics the Binance API endpoint.
     """
     # 1. Find the instrument details from the CSV
-    instrument_details = script_df[
-        (script_df['tradingSymbol'] == symbol) &
-        (script_df['instrument'] == 'EQUITY')
-    ]
+    instrument_details = script_df[script_df['tradingSymbol'] == symbol]
 
     if instrument_details.empty:
-        raise HTTPException(status_code=404, detail=f"Equity instrument with trading symbol '{symbol}' not found.")
+        raise HTTPException(status_code=404, detail=f"Instrument with trading symbol '{symbol}' not found.")
 
     instrument = instrument_details.iloc[0]
     security_id = instrument['securityId']
