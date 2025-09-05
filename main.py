@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import requests
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 
 # Load the CSV file into a pandas DataFrame
@@ -12,6 +13,15 @@ except FileNotFoundError:
     raise RuntimeError("Error: api-scrip-master.csv not found. Please make sure the file is in the same directory.")
 
 app = FastAPI()
+
+# CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Your DhanHQ Access Token - It's recommended to use an environment variable for this
 # For local testing you can set it here, but for Render, use environment variables.
