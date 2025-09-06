@@ -59,7 +59,15 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
     from_date_str = from_date.strftime('%Y-%m-%d %H:%M:%S')
     to_date_str = to_date.strftime('%Y-%m-%d %H:%M:%S')
 
-    # 3. Prepare and make the request to DhanHQ API
+    # 3. Parse the interval to get the integer value
+    try:
+        parsed_interval = ''.join(filter(str.isdigit, interval))
+        if not parsed_interval:
+            raise ValueError("Invalid interval format")
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail=f"Invalid interval format: '{interval}'")
+
+    # 4. Prepare and make the request to DhanHQ API
     headers = {
         "access-token": DHAN_ACCESS_TOKEN,
         "Content-Type": "application/json",
@@ -70,7 +78,7 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "securityId": str(security_id),
         "exchangeSegment": exchange_segment,
         "instrument": instrument_type,
-        "interval": interval,
+        "interval": parsed_interval,
         "fromDate": from_date_str,
         "toDate": to_date_str
     }
@@ -95,7 +103,7 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error decoding JSON response from DhanHQ API: {e}")
 
-    # 4. Transform the data to Binance kline format
+    # 5. Transform the data to Binance kline format
     try:
         # Combine the lists into a list of tuples
         zipped_data = zip(
