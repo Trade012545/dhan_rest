@@ -27,6 +27,7 @@ app.add_middleware(
 # Your DhanHQ Access Token - It's recommended to use an environment variable for this
 # For local testing you can set it here, but for Render, use environment variables.
 DHAN_ACCESS_TOKEN = os.environ.get("DHAN_ACCESS_TOKEN", "YOUR_DHAN_ACCESS_TOKEN_HERE")
+print(f"--- USING DHAN_ACCESS_TOKEN ---: {DHAN_ACCESS_TOKEN}")
 
 DHAN_API_URL = "https://api.dhan.co/v2/charts/intraday"
 
