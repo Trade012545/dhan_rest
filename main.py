@@ -75,6 +75,10 @@ def get_klines(symbol: str, interval: str, startTime: int = None, endTime: int =
         "toDate": to_date_str
     }
 
+    print(f"--- SENDING REQUEST TO DHANHQ ---")
+    print(f"URL: {DHAN_API_URL}")
+    print(f"Headers: {headers}")
+    print(f"Payload: {payload}")
     try:
         response = requests.post(DHAN_API_URL, headers=headers, json=payload)
         response.raise_for_status()
